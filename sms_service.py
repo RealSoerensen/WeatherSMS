@@ -6,8 +6,10 @@ from models import User
 import requests
 from inspect import cleandoc
 import os
+from twilio.rest import Client
 
 BASE = "http://api.openweathermap.org/data/2.5/weather?"
+client = Client(os.environ['SID'], os.environ['TOKEN'])
 
 
 def get_weather(city: str):
@@ -15,7 +17,7 @@ def get_weather(city: str):
     response = requests.get(complete_url)
     r = response.json()
     if r["cod"] == "404":
-        return "City not found"
+        return "The city registered with this number is invalid.\nPlease opt-out on https://WeatherSMS.soerensen.repl.co and re-register with the correct information."
 
     main = r["main"]
 
@@ -33,18 +35,25 @@ Opt-out here: https://WeatherSMS.soerensen.repl.co""")
 
 @repeat(schedule.every().day.at("06:00:00"))
 def send_sms():
-    print("test")
     with app.app_context():
         for user in db.session.query(User).all():
-            print("Sending sms")
-            print("Sending to: " + user.number)
-            print(get_weather(user.city))
-            print("SMS sent")
-    return schedule.CancelJob
+            try:
+                body = get_weather(user.city)
+            except Exception:
+                body = "Good morning! Unfortunately, I was unable to fetch todays weather. I will try again tomorrow!"
+
+            try:
+                client.messages \
+                    .create(
+                         body=body,
+                         from_=os.environ["SENDING_NUM"],
+                         to=user.number
+                     )
+            except Exception:
+              pass
 
 
 def scheduler():
     while True:
-        print("running")
         schedule.run_pending()
         time.sleep(1)
