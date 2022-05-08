@@ -1,0 +1,38 @@
+<DOCTYPE html5>
+<html>
+  <head>
+    <title>WeatherSMS</title>
+    <link href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&amp;display=swap" rel="stylesheet"/>
+    <link href="{{ url_for('static',filename='style.css') }}" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <label id="header">Welcome to WeatherSMS</label>
+    <div class="wrapper">
+      <label class="text">Receive daily updates on the weather every day at 6AM UTC</label><br>
+      <label class="text">Opt in down below</label><br>
+      {% if status %}
+        <label class="text">Status: {{status}}</label><br>
+      {% endif %}
+    </div>
+    <br></br>
+    <div class="wrapper">
+      <form method="post">
+        <label class="text">Phone number with prefix (e.g. +12 34567890):</label><br>
+        <input name="phone" type="text" class="input"><br></br>
+        <label class="text">City to track:</label><br>
+        <input name="city" type="text" class="input"><br></br>
+        <button name="opt_in" type="submit" class="button">Opt in</button>
+      </form>
+    </div>
+    <br></br>
+    <div class="wrapper">
+      <form method="post">
+        <label id="header">Opt out</label><br>
+        <label class="text" for="phone">Your phone number:</label><br>
+        <input name="phone_out" type="text" class="input"><br>      
+        <button name="opt_out" type="submit" class="button">Opt out</button>
+      </form>
+    </div>
+  </body>
+</html>
